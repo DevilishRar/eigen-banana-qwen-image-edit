@@ -6,7 +6,38 @@ from typing import Callable
 from typing import ParamSpec
 from torchao.quantization import quantize_
 from torchao.quantization import Float8DynamicActivationFloat8WeightConfig
-import spaces
+
+# Try to import spaces (HuggingFace Spaces specific)
+try:
+    import spaces
+except ImportError:
+    # Create dummy implementations for non-HF environments (like Kaggle)
+    from contextlib import contextmanager
+    
+    class spaces:
+        @staticmethod
+        def GPU(duration=None):
+            def decorator(func):
+                return func
+            return decorator
+        
+        @staticmethod
+        @contextmanager
+        def aoti_capture(module):
+            class DummyCall:
+                def __init__(self):
+                    self.args = ()
+                    self.kwargs = {}
+            yield DummyCall()
+        
+        @staticmethod
+        def aoti_compile(exported, configs):
+            return None
+        
+        @staticmethod
+        def aoti_apply(compiled, module):
+            pass
+
 import torch
 from torch.utils._pytree import tree_map
 
