@@ -2,7 +2,16 @@ import gradio as gr
 import numpy as np
 import random
 import torch
-import spaces
+
+# Try to import spaces (HuggingFace Spaces specific)
+try:
+    import spaces
+except ImportError:
+    # Create a dummy decorator for non-HF environments (like Kaggle)
+    class spaces:
+        @staticmethod
+        def GPU(func):
+            return func
 
 from PIL import Image
 from diffusers import FlowMatchEulerDiscreteScheduler
@@ -15,7 +24,6 @@ import math
 from huggingface_hub import hf_hub_download
 from safetensors.torch import load_file
 
-from PIL import Image
 import os
 
 
